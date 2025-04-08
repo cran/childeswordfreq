@@ -1,0 +1,12 @@
+50d4543f884591c79b6729dfef06fef8 *DESCRIPTION
+12f61dcb034a4c2faa626761e7bd95ea *LICENSE
+973c78e7ca6a5d2323c392ea40f32619 *NAMESPACE
+42d777a249d476d2fc719356db8bcb39 *R/Function.R
+7d632a5273ca89bed9a55f4ae75a1142 *build/vignette.rds
+55df04734069dfe944bb1ceb45adeba6 *inst/doc/childeswordfreq.Rmd
+29df7c9fce282749c22e5de037c53583 *inst/doc/childeswordfreq.html
+41fa1df60fe8fd0beb58e1e5f74bc935 *inst/extdata/word_list.csv
+9098037ead6be9cc60c712d03bb65adc *man/word_counts.Rd
+b0336af4659c6a0c5130ffd897b279c0 *tests/testthat.R
+d620958899a9e986ba292ed418d3d246 *tests/testthat/test-word_counts.R
+55df04734069dfe944bb1ceb45adeba6 *vignettes/childeswordfreq.Rmd
