@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Nahar Albudoor" />
+
+
+<title>childeswordfreq: Usage &amp; Best Practices</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">childeswordfreq: Usage &amp; Best
+Practices</h1>
+<h4 class="author">Nahar Albudoor</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#setup-and-basic-requirements" id="toc-setup-and-basic-requirements">1. Setup and Basic
+Requirements</a></li>
+<li><a href="#input-format-and-parameter-specification" id="toc-input-format-and-parameter-specification">2. Input Format and
+Parameter Specification</a>
+<ul>
+<li><a href="#word-lists-for-word_counts" id="toc-word-lists-for-word_counts">2.1 Word lists for
+<code>word_counts()</code></a></li>
+<li><a href="#childes-filters" id="toc-childes-filters">2.2 CHILDES
+filters</a></li>
+</ul></li>
+<li><a href="#type-vs.-token-mode" id="toc-type-vs.-token-mode">3. Type
+vs. Token Mode</a>
+<ul>
+<li><a href="#morphology-and-stems" id="toc-morphology-and-stems">3.1
+Morphology and Stems</a></li>
+<li><a href="#part-of-speech-filtering" id="toc-part-of-speech-filtering">3.2 Part-of-Speech Filtering</a></li>
+</ul></li>
+<li><a href="#normalization-and-zipf-scaling" id="toc-normalization-and-zipf-scaling">4. Normalization and Zipf
+Scaling</a></li>
+<li><a href="#freq-style-ignore-rules-and-pattern-filters" id="toc-freq-style-ignore-rules-and-pattern-filters">5. FREQ-style
+Ignore Rules and Pattern Filters</a></li>
+<li><a href="#phrase-frequencies-with-phrase_counts" id="toc-phrase-frequencies-with-phrase_counts">6. Phrase Frequencies
+with <code>phrase_counts()</code></a></li>
+<li><a href="#behavior-when-items-are-missing-from-childes" id="toc-behavior-when-items-are-missing-from-childes">7. Behavior When
+Items Are Missing from CHILDES</a></li>
+<li><a href="#expected-processing-times" id="toc-expected-processing-times">8. Expected Processing Times</a>
+<ul>
+<li><a href="#practical-recommendations" id="toc-practical-recommendations">8.1 Practical
+Recommendations:</a></li>
+<li><a href="#caching" id="toc-caching">8.2 Caching</a></li>
+</ul></li>
+<li><a href="#reporting-and-reproducibility" id="toc-reporting-and-reproducibility">9. Reporting and
+Reproducibility</a>
+<ul>
+<li><a href="#to-make-analyses-replicable" id="toc-to-make-analyses-replicable">To make analyses
+replicable:</a></li>
+<li><a href="#template-for-methods-section" id="toc-template-for-methods-section">Template for Methods
+Section:</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This document provides a practical overview and methodological
+recommendations for using <code>childeswordfreq</code>.</p>
+<div id="setup-and-basic-requirements" class="section level2">
+<h2>1. Setup and Basic Requirements</h2>
+<p><code>childeswordfreq</code> is designed as a thin, reproducible
+layer on top of <code>childesr</code>. <strong>All data access is
+remote.</strong></p>
+<ul>
+<li><strong>R ≥ 4.4.2</strong></li>
+<li><strong>Active internet connection</strong> (no local CHILDES
+corpora are used)</li>
+<li><strong>Dependencies</strong> (installed automatically from CRAN):
+<code>childesr</code>, <code>dplyr</code>, <code>tidyr</code>,
+<code>tibble</code>, <code>rlang</code>, <code>writexl</code>,
+<code>readr</code>, <code>cachem</code>, <code>memoise</code>,
+<code>rappdirs</code></li>
+</ul>
+<p>Caching is off by default; Section 8.2 explains when and why to use
+it.</p>
+<p><strong>Installation</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install and Load</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;childeswordfreq&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(childeswordfreq)</span></code></pre></div>
+</div>
+<div id="input-format-and-parameter-specification" class="section level2">
+<h2>2. Input Format and Parameter Specification</h2>
+<div id="word-lists-for-word_counts" class="section level3">
+<h3>2.1 Word lists for <code>word_counts()</code></h3>
+<p><code>word_counts()</code> accepts either:</p>
+<ul>
+<li>A <code>.csv</code> file with a column named <code>word</code>,
+or</li>
+<li>A character vector via the <code>words</code> argument.</li>
+</ul>
+<p>If <code>word_list_file = NULL</code> and <code>words = NULL</code>,
+<code>word_counts()</code> enters <strong>“all-words” mode</strong> and
+counts <strong>every type</strong> in the selected slice.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Prepare a temporary CSV with a `word` column</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>tmp_csv <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">write.csv</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">word =</span> <span class="fu">c</span>(<span class="st">&quot;go&quot;</span>, <span class="st">&quot;want&quot;</span>, <span class="st">&quot;think&quot;</span>)),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  tmp_csv,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># Output path for the Excel workbook</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.xlsx&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co"># Run word_counts on a specific CHILDES slice</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">word_list_file =</span> tmp_csv,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">36</span>),</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="at">role =</span> <span class="fu">c</span>(<span class="st">&quot;CHI&quot;</span>, <span class="st">&quot;MOT&quot;</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Requirements for .csv inputs:</strong></p>
+<ul>
+<li>A single column <code>.csv</code> file.</li>
+<li>The column header must be exactly <code>word</code>.</li>
+<li>Each row must include one target item or pattern.</li>
+<li>Case matching is case-insensitive at the <strong>type</strong>
+level; <strong>token</strong> mode makes use of CHILDES gloss and MOR
+information.</li>
+</ul>
+</div>
+<div id="childes-filters" class="section level3">
+<h3>2.2 CHILDES filters</h3>
+<p>All CHILDES filters (<code>language</code>, <code>corpus</code>,
+<code>collection</code>, <code>age</code>, <code>sex</code>,
+<code>role</code>, <code>role_exclude</code>) are passed directly to
+<code>childesr</code>. In practice:</p>
+<ul>
+<li><code>corpus</code> and <code>language</code> names must match
+CHILDES conventions exactly.</li>
+<li><code>age</code> is in months and can be a single value or
+<code>c(min, max)</code>.</li>
+<li><code>role</code> and <code>role_exclude</code> are speaker code(s),
+for example <code>&quot;CHI&quot;</code>, <code>&quot;MOT&quot;</code>, <code>&quot;FAT&quot;</code>,
+<code>&quot;ADU&quot;</code>.</li>
+<li>Any parameter left as <code>NULL</code> is interpreted as “no
+restriction” on that dimension.</li>
+</ul>
+<p><strong>Example: all English-language corpora, no restriction on age
+or role:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">word_list_file =</span> tmp_csv,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">age =</span> <span class="cn">NULL</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">role =</span> <span class="cn">NULL</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="type-vs.-token-mode" class="section level2">
+<h2>3. Type vs. Token Mode</h2>
+<p><code>word_counts()</code> has two operational modes:</p>
+<ul>
+<li><strong>Type mode</strong>: default; <strong>more
+efficient</strong>; counts exact lexical types using
+<code>childesr::get_types()</code>.</li>
+<li><strong>Token mode</strong>: enabled when any of the following are
+used:
+<ul>
+<li><code>wildcard = TRUE</code></li>
+<li>The word list itself contains <code>%</code> or <code>_</code></li>
+<li><code>collapse = &quot;stem&quot;</code></li>
+<li><code>part_of_speech</code> is non-<code>NULL</code></li>
+<li><code>tier = &quot;mor&quot;</code></li>
+</ul></li>
+</ul>
+<p>Token mode uses <code>childesr::get_tokens()</code> and may be
+substantially <strong>slower</strong>, particularly when used over wide
+age ranges or many corpora.</p>
+<p><strong>Examples:</strong></p>
+<p><em>Type mode (exact forms)</em></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">words =</span> <span class="fu">c</span>(<span class="st">&quot;go&quot;</span>, <span class="st">&quot;went&quot;</span>, <span class="st">&quot;going&quot;</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">36</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span></code></pre></div>
+<p><em>Token mode with wildcard and stems</em></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">words =</span> <span class="fu">c</span>(<span class="st">&quot;go%&quot;</span>, <span class="st">&quot;run%&quot;</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">36</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">wildcard =</span> <span class="cn">TRUE</span>,        <span class="co"># &quot;%&quot; and &quot;_&quot; patterns</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">collapse =</span> <span class="st">&quot;stem&quot;</span>,      <span class="co"># aggregate inflected variants</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">part_of_speech =</span> <span class="st">&quot;v&quot;</span>,   <span class="co"># verb-only counts where MOR is available</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">tier =</span> <span class="st">&quot;mor&quot;</span>            <span class="co"># MOR-tagged tokens only</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>)</span></code></pre></div>
+<div id="morphology-and-stems" class="section level3">
+<h3>3.1 Morphology and Stems</h3>
+<p>In token mode, <code>collapse = &quot;stem&quot;</code> attempts to aggregate
+inflected variants under a single stem where MOR analysis supports it
+(for example “go”, “goes”, “going”, “went” under one stem).</p>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Stem assignment depends on the MOR tier and may vary across
+corpora.</li>
+<li>Some forms may remain distinct if they are not consistently
+tagged.</li>
+</ul>
+<p>For analyses where inflection is theoretically important, users
+should inspect the resulting stems and, if necessary, operate on
+separate forms explicitly.</p>
+</div>
+<div id="part-of-speech-filtering" class="section level3">
+<h3>3.2 Part-of-Speech Filtering</h3>
+<p>The <code>part_of_speech</code> argument restricts counts to specific
+POS values in MOR (for example <code>c(&quot;n&quot;,&quot;v&quot;)</code>). This is only
+available in token mode and is useful for:</p>
+<ul>
+<li>Disambiguating homographs across categories.</li>
+<li>Excluding non-content items for certain analyses.</li>
+</ul>
+<p>Users should verify POS behavior on a subset of items before relying
+on it in a large-scale analysis.</p>
+</div>
+</div>
+<div id="normalization-and-zipf-scaling" class="section level2">
+<h2>4. Normalization and Zipf Scaling</h2>
+<p><code>word_counts()</code> can attach normalized rates and
+Zipf-scaled values.</p>
+<ul>
+<li><code>normalize = TRUE</code> adds per-<code>per</code> rates for
+each speaker role and for <code>Total</code> (for example <strong>per
+1,000 tokens</strong>).</li>
+<li><code>zipf = TRUE</code> adds Zipf columns (<code>*_Zipf</code>),
+computed as <code>log10</code> of the <strong>estimated frequency per
+billion tokens</strong>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">word_list_file =</span> tmp_csv,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">48</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">role =</span> <span class="fu">c</span>(<span class="st">&quot;CHI&quot;</span>, <span class="st">&quot;MOT&quot;</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">normalize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">per =</span> <span class="dv">1000</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">zipf =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>The <code>Dataset_Summary</code> sheet records the total token counts
+used as denominators, both overall and by speaker role, so that
+normalized and Zipf values can be interpreted and recomputed if
+needed.</p>
+</div>
+<div id="freq-style-ignore-rules-and-pattern-filters" class="section level2">
+<h2>5. FREQ-style Ignore Rules and Pattern Filters</h2>
+<p>By default, <code>word_counts()</code> applies CLAN/FREQ-style ignore
+rules via <code>freq_ignore_special = TRUE</code>:</p>
+<ul>
+<li>drops <code>xxx</code>, <code>www</code>, and any item beginning
+with <code>0</code>, <code>&amp;</code>, <code>+</code>, <code>-</code>,
+or <code>#</code></li>
+</ul>
+<p>These rules are applied both to the internal data and to the final
+frequency table. Set <code>freq_ignore_special = FALSE</code> to retain
+these items.</p>
+<p>The arguments <code>include_patterns</code> and
+<code>exclude_patterns</code> provide an additional CHILDES-style filter
+layer on lexical items:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">word_counts</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="at">words =</span> <span class="fu">c</span>(<span class="st">&quot;go&quot;</span>, <span class="st">&quot;get&quot;</span>, <span class="st">&quot;make&quot;</span>, <span class="st">&quot;mom&quot;</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">output_file =</span> out,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">48</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="at">include_patterns =</span> <span class="fu">c</span>(<span class="st">&quot;g%&quot;</span>),   <span class="co"># keep only words starting with &quot;g&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">exclude_patterns =</span> <span class="fu">c</span>(<span class="st">&quot;%ing&quot;</span>)  <span class="co"># but drop &quot;-ing&quot; forms</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>Patterns use <code>%</code> for “any number of characters” and
+<code>_</code> for “one character,” matching the FREQ/CLAN
+convention.</p>
+</div>
+<div id="phrase-frequencies-with-phrase_counts" class="section level2">
+<h2>6. Phrase Frequencies with <code>phrase_counts()</code></h2>
+<p><code>phrase_counts()</code> is an <strong>experimental</strong>
+companion to <code>word_counts()</code>. It operates on utterance text
+rather than word types and is aimed at formulaic sequences, frames, and
+multiword expressions.</p>
+<p><strong>Basic Usage:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>phr_out <span class="ot">&lt;-</span> <span class="fu">phrase_counts</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">phrases =</span> <span class="fu">c</span>(<span class="st">&quot;i don&#39;t know&quot;</span>, <span class="st">&quot;let&#39;s go&quot;</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">corpus =</span> <span class="st">&quot;Brown&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">36</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">role =</span> <span class="fu">c</span>(<span class="st">&quot;CHI&quot;</span>, <span class="st">&quot;MOT&quot;</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">wildcard =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">normalize =</span> <span class="cn">TRUE</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>phr_out</span></code></pre></div>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li><code>phrases</code> are matched in the <strong>utterance
+string</strong>, not via MOR.</li>
+<li><code>wildcard = TRUE</code> enables <code>*</code> (any characters)
+and <code>?</code> (single character) in patterns</li>
+<li>Normalization is per number of utterances
+(<code>per_utts</code>).</li>
+<li>Output is a tibble if <code>output_file</code> is <code>NULL</code>.
+Otherwise an <strong>Excel workbook</strong> with counts, a dataset
+summary, and run metadata.</li>
+</ul>
+<p>Because phrase matching is string-based, users should inspect a
+sample of matches and refine their patterns to avoid obvious false
+positives.</p>
+</div>
+<div id="behavior-when-items-are-missing-from-childes" class="section level2">
+<h2>7. Behavior When Items Are Missing from CHILDES</h2>
+<p>If a word or pattern in the input list is <strong>appears zero
+times</strong> in the selected slice of CHILDES,
+<code>word_counts()</code> returns <strong>zero counts</strong> for that
+row.</p>
+<p>This is true both in type and token modes:</p>
+<ul>
+<li>The row remains in <code>Word_Frequencies</code>.</li>
+<li>All speaker-role columns and the <code>Total</code> column are
+<code>0</code>.</li>
+<li>Normalization and Zipf columns (if requested) are computed on the
+resulting zeros.</li>
+</ul>
+<p>This behavior is deliberate:</p>
+<ul>
+<li>Zero counts represent a genuine “<strong>not observed in this
+slice</strong>” result.</li>
+<li>It allows users to distinguish “<strong>not queried</strong>” (no
+row) from “<strong>queried but absent</strong>” (row present, all
+zeros).</li>
+</ul>
+<p>When reporting results, it is good practice to state explicitly that
+non-attested words are retained with 0 counts.</p>
+</div>
+<div id="expected-processing-times" class="section level2">
+<h2>8. Expected Processing Times</h2>
+<p>Runtime depends on:</p>
+<ul>
+<li>Number of target items</li>
+<li>Number and size of selected corpora</li>
+<li>Whether <strong>token mode</strong> is used</li>
+<li>Network latency and TalkBank load</li>
+<li>Whether <strong>disk caching</strong> is enabled</li>
+</ul>
+<p>The following are approximate ranges from typical runs on a modern
+laptop with a stable connection:</p>
+<ul>
+<li><p><strong>Small type-mode query</strong><br />
+Fewer than 10 words, single English corpus, moderate age range<br />
+→ <em>seconds (often &lt; 15 s)</em>.</p></li>
+<li><p><strong>Medium type-mode query</strong><br />
+50–100 words, several corpora, broad age range<br />
+→ <em>tens of seconds to a couple of minutes</em>.</p></li>
+<li><p><strong>Token-mode query with wildcards/POS</strong><br />
+Many patterns, <code>collapse = &quot;stem&quot;</code>,
+<code>part_of_speech</code> set, <code>tier = &quot;mor&quot;</code><br />
+→ <em>expect 2–5× the corresponding type-mode runtime</em>.</p></li>
+<li><p><strong>Wide, multi-corpus token-mode queries</strong><br />
+Large word lists or “all-words” mode over many corpora and ages<br />
+→ <em>can take several minutes, especially without
+caching</em>.</p></li>
+</ul>
+<div id="practical-recommendations" class="section level3">
+<h3>8.1 Practical Recommendations:</h3>
+<ul>
+<li>Prototype queries with a very small word list before scaling up</li>
+<li>Restrict <code>language</code>, <code>corpus</code>,
+<code>age</code>, and <code>role</code> as tightly as your research
+question allows</li>
+<li>Enable caching for interactive exploration.</li>
+</ul>
+</div>
+<div id="caching" class="section level3">
+<h3>8.2 Caching</h3>
+<p><code>childeswordfreq</code> includes optional disk caching to
+accelerate repeated queries during interactive work. Caching stores the
+results of remote CHILDES queries so that subsequent calls with the same
+arguments return immediately rather than re-downloading data.</p>
+<p><strong>What counts as “the same query”?</strong> Caching speeds up
+calls that hit the same CHILDES slice, meaning all of the following
+match exactly:</p>
+<ul>
+<li><code>language</code>, <code>corpus</code>,
+<code>collection</code></li>
+<li><code>age</code>, <code>sex</code>, <code>role</code>,
+<code>role_exclude</code></li>
+<li>Mode (type vs token) and token-mode settings (<code>wildcard</code>,
+<code>collapse</code>, <code>part_of_speech</code>,
+<code>tier</code>)</li>
+</ul>
+<p>If any of these change, a new remote query is required and caching
+does not apply.</p>
+<p><strong>When this is useful</strong>: During development, analyses
+are regularly re-run when:</p>
+<ul>
+<li>Re‐running the same code chunks while debugging</li>
+<li>Knitting R Markdown files</li>
+<li>Restarting an R session and re-executing the script</li>
+<li>Testing changes to downstream processing</li>
+<li>Running examples or unit tests that call the same slice
+repeatedly</li>
+</ul>
+<p>In practice, you may run the same CHILDES query dozens of times.
+Without caching, each run contacts the API and can take seconds to
+minutes. With caching, repeated runs are effectively instantaneous.</p>
+<p>Typical speedup - First run: full CHILDES download (seconds to
+minutes) - Subsequent identical runs: near 0 seconds</p>
+<p>This is a substantial benefit for workflows that involve frequent
+re-execution.</p>
+<p><strong>Usage</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">cwf_cache_enable</span>()   <span class="co"># turn caching on for interactive exploration</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co"># ...run exploratory word_counts() or phrase_counts() calls...</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">cwf_cache_disable</span>()  <span class="co"># disable before final or published analyses</span></span></code></pre></div>
+<p>Final analyses should always be derived directly from the current
+CHILDES database, not from previously cached local data. Disabling
+caching ensures that the published output reflects up-to-date
+datasets.</p>
+</div>
+</div>
+<div id="reporting-and-reproducibility" class="section level2">
+<h2>9. Reporting and Reproducibility</h2>
+<p>Every <code>word_counts()</code> and <code>phrase_counts()</code> run
+writes:</p>
+<ul>
+<li><strong>Dataset_Summary</strong>: corpus, speaker, age, and
+token/utterance totals, plus normalization metadata</li>
+<li><strong>Run_Metadata</strong>: CHILDES DB version, package versions,
+timestamp, and cache status</li>
+</ul>
+<div id="to-make-analyses-replicable" class="section level3">
+<h3>To make analyses replicable:</h3>
+<ul>
+<li>Archive the entire Excel workbook alongside analysis scripts</li>
+<li>Report at least:
+<ul>
+<li>Language, corpus (and/or collection)</li>
+<li>Age range in months</li>
+<li>Speaker roles included/excluded</li>
+<li>Whether token mode was used (for example wildcards, stems, POS, MOR
+tier)</li>
+<li>Whether counts are raw, normalized, or Zipf-scaled</li>
+<li>Behavior for non-attested items (rows with 0 counts)</li>
+</ul></li>
+</ul>
+</div>
+<div id="template-for-methods-section" class="section level3">
+<h3>Template for Methods Section:</h3>
+<pre><code>Lexical/phrasal frequencies were computed using the childeswordfreq R package (version X.Y.Z) through childesr (version A.B.C), querying the CHILDES database (version V). We analyzed language(s) L and corpus/corpora C, with an age range of [Amin, Amax] months. Target speaker roles included R, with excluded roles R_excl. Counts were obtained in [type/token] mode. [If token mode used:] We specified: [wildcards, stem collapsing, POS filters, MOR tier]. We applied normalization [per N tokens/Zipf scaling]. </code></pre>
+<p>Adjust the placeholders to match the values recorded in your own
+outputs.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
